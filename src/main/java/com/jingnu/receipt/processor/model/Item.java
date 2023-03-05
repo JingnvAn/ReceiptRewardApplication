@@ -1,4 +1,4 @@
-package com.jingnu.receipt.processor;
+package com.jingnu.receipt.processor.model;
 
 import org.springframework.stereotype.Component;
 
