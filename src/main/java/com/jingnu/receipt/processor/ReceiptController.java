@@ -1,7 +1,8 @@
 package com.jingnu.receipt.processor;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jingnu.receipt.processor.exception.ValidationException;
+import com.jingnu.receipt.processor.service.ReceiptService;
+import com.jingnu.receipt.processor.validator.ReceiptValidator;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 public class ReceiptController {
     @Autowired
     ReceiptService receiptService;
+
+    @Autowired
+    ReceiptValidator receiptValidator;
 
 
     @GetMapping(value="/{id}/points")
@@ -31,7 +35,7 @@ public class ReceiptController {
     public ResponseEntity<String> submitReceipt(@RequestBody String requestBody) {
         try {
 
-            receiptService.validateReceipt(requestBody);
+            receiptValidator.validateReceipt(requestBody);
 
 
 
