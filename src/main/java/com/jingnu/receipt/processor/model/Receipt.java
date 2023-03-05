@@ -1,4 +1,4 @@
-package com.jingnu.receipt.processor;
+package com.jingnu.receipt.processor.model;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
