@@ -2,13 +2,14 @@ package com.jingnu.receipt.processor.validator;
 
 import com.jingnu.receipt.processor.ErrorMessage;
 import com.jingnu.receipt.processor.exception.ValidationException;
+import com.jingnu.receipt.processor.model.Receipt;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ReceiptValidator extends BaseValidator{
-   enum Properties {
+   public enum Properties {
       RETAILER("retailer"),
       PURCHASE_DATE("purchaseDate"),
       PURCHASE_TIME("purchaseTime"),

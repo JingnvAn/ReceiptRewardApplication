@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ItemValidator extends BaseValidator{
-    enum Properties {
+    public enum Properties {
         SHORT_DESCRIPTION("shortDescription"),
         PRICE("price");
 
@@ -28,7 +28,7 @@ public class ItemValidator extends BaseValidator{
             throw new ValidationException(ErrorMessage.EMPTY_INPUT_GENERAL.getMessage());
         }
         JSONObject inputJson = new JSONObject(input);
-        JSONArray items = (JSONArray) inputJson.get(ReceiptValidator.Properties.ITEMS.getValue());
+        JSONArray items = inputJson.getJSONArray(ReceiptValidator.Properties.ITEMS.getValue());
 
         if (items.isEmpty()) {
             throw new ValidationException(ErrorMessage.EMPTY_ITEMS_NOT_ALLOW.getMessage());
