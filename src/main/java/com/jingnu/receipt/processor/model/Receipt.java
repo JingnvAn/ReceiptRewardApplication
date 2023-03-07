@@ -13,6 +13,11 @@ public class Receipt {
     @Autowired
     private List<Item> items;
     private String total;
+//    private Double points;
+//
+//    public Double getPoints() {return this.points; }
+//
+//    public void setPoints(Double points) {this.points = points; }
 
     public String getRetailer() {
         return retailer;
