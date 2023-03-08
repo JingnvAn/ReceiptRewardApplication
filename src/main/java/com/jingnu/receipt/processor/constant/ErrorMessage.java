@@ -1,4 +1,4 @@
-package com.jingnu.receipt.processor;
+package com.jingnu.receipt.processor.constant;
 
 public enum ErrorMessage {
     EMPTY_PAYLOAD("Empty payload not allowed."),

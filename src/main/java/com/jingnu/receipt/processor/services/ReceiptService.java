@@ -1,25 +1,50 @@
-package com.jingnu.receipt.processor.service;
+package com.jingnu.receipt.processor.services;
 
-import com.jingnu.receipt.processor.model.Item;
-import com.jingnu.receipt.processor.model.Receipt;
+import com.jingnu.receipt.processor.models.Item;
+import com.jingnu.receipt.processor.models.Receipt;
+import com.jingnu.receipt.processor.repositories.ReceiptRepository;
 import com.jingnu.receipt.processor.validator.ItemValidator;
 import com.jingnu.receipt.processor.validator.ReceiptValidator;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.time.LocalTime;
-import java.util.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Component
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
 public class ReceiptService {
+    @Autowired
+    ReceiptRepository receiptRepository;
     @Autowired
     ItemService itemService;
     private static final Logger logger = LoggerFactory.getLogger(ReceiptService.class);
 
-    public Receipt createReceiptFromInput(String input) {
+    public List<Receipt> getAllReceipts() {
+        List<Receipt> receipts = new ArrayList<>();
+        for (Receipt receipt : receiptRepository.findAll()) {
+            receipts.add(receipt);
+        }
+        return receipts;
+    }
+
+    public Receipt getReceiptById(String id) {
+        return receiptRepository.findById(id).orElse(null);
+    }
+
+    @Transactional
+    public Receipt addReceipt(String input) {
+        Receipt receipt = createReceiptFromInput(input);
+        receipt.setPoints(calculatePoints(receipt));
+        return receiptRepository.save(receipt);
+    }
+
+    private Receipt createReceiptFromInput(String input) {
         Receipt receipt = new Receipt();
         JSONObject inputJson = new JSONObject(input);
         receipt.setRetailer(inputJson.getString(ReceiptValidator.Properties.RETAILER.getValue()));
@@ -41,11 +66,7 @@ public class ReceiptService {
         return receipt;
     }
 
-    public String generateReceiptId() {
-        return UUID.randomUUID().toString();
-    }
-
-    public Integer calculatePoints(Receipt inputReceipt) {
+    private Integer calculatePoints(Receipt inputReceipt) {
         int points = 0;
         //One point for every alphanumeric character in the retailer name.
         for (char c : inputReceipt.getRetailer().toCharArray()) {
@@ -94,8 +115,8 @@ public class ReceiptService {
         LocalTime start = LocalTime.of(14, 0); // 2:00pm
         LocalTime end = LocalTime.of(16, 0); // 4:00pm
         if (!purchaseTime.isBefore(start) && purchaseTime.isBefore(end)) {
-           points += 10;
-           logger.debug("10 points - the time of purchase is after 2:00pm and before 4:00pm");
+            points += 10;
+            logger.debug("10 points - the time of purchase is after 2:00pm and before 4:00pm");
         }
 
         return points;

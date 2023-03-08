@@ -1,23 +1,38 @@
-package com.jingnu.receipt.processor.model;
+package com.jingnu.receipt.processor.models;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
+import jakarta.persistence.*;
 import java.util.List;
 
-@Component
+@Entity
+@Table(name = "receipts")
 public class Receipt {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Item> items;
     private String retailer;
     private String purchaseDate;
     private String purchaseTime;
-    @Autowired
-    private List<Item> items;
     private String total;
-//    private Double points;
-//
-//    public Double getPoints() {return this.points; }
-//
-//    public void setPoints(Double points) {this.points = points; }
+    private Integer points;
+
+    public Receipt() {}
+
+    public Receipt(List<Item> items, String retailer, String purchaseDate, String purchaseTime, String total, Integer points) {
+        this.items = items;
+        this.retailer = retailer;
+        this.purchaseDate = purchaseDate;
+        this.purchaseTime = purchaseTime;
+        this.total = total;
+        this.points = points;
+    }
+    public String getId() { return this.id; }
+
+    public void setId(String id) { this.id = id; }
+    public Integer getPoints() { return this.points; }
+
+    public void setPoints(Integer points) { this.points = points; }
 
     public String getRetailer() {
         return retailer;
