@@ -1,6 +1,6 @@
 package com.jingnu.receipt.processor.validator;
 
-import com.jingnu.receipt.processor.ErrorMessage;
+import com.jingnu.receipt.processor.constant.ErrorMessage;
 import com.jingnu.receipt.processor.exception.ValidationException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;

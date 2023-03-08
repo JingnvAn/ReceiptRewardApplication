@@ -1,9 +1,9 @@
-package com.jingnu.receipt.processor.model;
+package com.jingnu.receipt.processor.responseModels;
 
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetPointsFailureResponse extends GetPointsResponse{
+public class SubmitReceiptFailureResponse extends SubmitReceiptResponse {
     private String errorMessage;
 
     public String getErrorMessage() {

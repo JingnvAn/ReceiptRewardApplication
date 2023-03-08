@@ -1,8 +1,8 @@
-package com.jingnu.receipt.processor.model;
+package com.jingnu.receipt.processor.responseModels;
 
 import org.springframework.stereotype.Component;
 @Component
-public class GetPointsSuccessResponse extends GetPointsResponse{
+public class GetPointsSuccessResponse extends GetPointsResponse {
     private Integer points;
     public Integer getPoints() { return points; }
 
