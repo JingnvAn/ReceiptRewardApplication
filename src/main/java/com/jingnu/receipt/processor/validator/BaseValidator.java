@@ -8,7 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class BaseValidator {
-    //Original pattern given in the api.yml is "^\\S+$", but it contradicts to example "Mountain dDew 12PK",
+    //Original pattern given in the api.yml is "^\\S+$", but it contradicts to example "Mountain Dew 12PK",
     //so replaced \S to allow space in the string of retailer and shortDescription
     private final String STRING_REGEX = "^.+$";
     private final String PRICE_REGEX = "^\\d+\\.\\d{2}$";
