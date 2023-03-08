@@ -1,5 +1,6 @@
 package com.jingnu.receipt.processor;
 
+import com.jingnu.receipt.processor.exception.ReceiptAlreadyExistException;
 import com.jingnu.receipt.processor.exception.ValidationException;
 import com.jingnu.receipt.processor.model.*;
 import com.jingnu.receipt.processor.service.ReceiptService;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/receipts")
@@ -41,6 +44,8 @@ public class ReceiptController {
     Map<String, Receipt> receiptsReservoir = new HashMap<>();
     // key: id, value: points
     Map<String, Integer> pointsReservoir = new HashMap<>();
+    // A set for receipts, used for POST request idempotent check
+    Set<Receipt> receiptSet = new HashSet<>();
 
     @GetMapping(value="/{id}/points")
     public ResponseEntity<GetPointsResponse> getPoints(@PathVariable("id") String id) {
@@ -64,6 +69,11 @@ public class ReceiptController {
             receiptValidator.validateReceipt(requestBody);
             // create a receipt object
             Receipt receipt = receiptService.createReceiptFromInput(requestBody);
+            // do idempotency check
+            boolean receiptAlreadyExist = receiptSet.add(receipt);
+            if (receiptAlreadyExist) {
+                throw new ReceiptAlreadyExistException(ErrorMessage.RESOURCE_ALREADY_EXISTS.getMessage());
+            }
             // generate an id for this receipt
             String id = receiptService.generateReceiptId();
             // store (id, Receipt) in a map
@@ -89,7 +99,7 @@ public class ReceiptController {
             return ResponseEntity.badRequest().body(submitReceiptFailureResponse);
         } catch (Exception generalException) {
             submitReceiptFailureResponse.setErrorMessage(generalException.getMessage());
-            logger.debug("Request failed with Exception " + generalException.getMessage());
+            logger.debug(ErrorMessage.INTERNAL_SERVER_ERROR + generalException.getMessage());
             return ResponseEntity.badRequest().body(submitReceiptFailureResponse);
         }
     }
