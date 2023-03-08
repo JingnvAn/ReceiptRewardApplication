@@ -48,14 +48,12 @@ public class ReceiptService {
     public Integer calculatePoints(Receipt inputReceipt) {
         int points = 0;
         //One point for every alphanumeric character in the retailer name.
-        int count1 = 0;
         for (char c : inputReceipt.getRetailer().toCharArray()) {
             if(Character.isLetterOrDigit(c)) {
                 points++;
-                count1++;
             }
         }
-        logger.debug(count1 + " points - retailer name has " + inputReceipt.getRetailer().length() + " characters");
+        logger.debug(points + " points - retailer name has " + inputReceipt.getRetailer().length() + " characters");
 
         //50 points if the total is a round dollar amount with no cents.
         String roundDollarRegex = "^\\d+\\.00$";

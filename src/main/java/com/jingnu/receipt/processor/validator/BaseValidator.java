@@ -2,6 +2,7 @@ package com.jingnu.receipt.processor.validator;
 
 import com.jingnu.receipt.processor.ErrorMessage;
 import com.jingnu.receipt.processor.exception.ValidationException;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,6 +33,13 @@ public class BaseValidator {
                     propertyName,
                     targetPattern
             ));
+        }
+    }
+    public void validateRequiredPropertiesExist(JSONObject json, String propertyName) throws ValidationException {
+        if (!json.has(propertyName)) {
+            throw new ValidationException(String.format(
+                    ErrorMessage.INVALID_INPUT_MISSING_REQUIRED_PROPERTY.getMessage(),
+                    propertyName));
         }
     }
 

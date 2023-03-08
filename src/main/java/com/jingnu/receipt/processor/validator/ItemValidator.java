@@ -33,13 +33,20 @@ public class ItemValidator extends BaseValidator{
         if (items.isEmpty()) {
             throw new ValidationException(ErrorMessage.EMPTY_ITEMS_NOT_ALLOW.getMessage());
         }
+
         // Loop through the array and process each item
         for (int i = 0; i < items.length(); i++) {
             JSONObject currentItem = items.getJSONObject(i);
 
+            // validate all required properties exist
+            for (Properties p : Properties.values()) {
+                validateRequiredPropertiesExist(currentItem, p.getValue());
+            }
+
             String shortDescription = currentItem.getString(Properties.SHORT_DESCRIPTION.getValue());
             String price = currentItem.getString(Properties.PRICE.getValue());
 
+            // validate pattern
             validateString(shortDescription.strip(),
                     getSTRING_REGEX(),
                     Properties.SHORT_DESCRIPTION.getValue());
