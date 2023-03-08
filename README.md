@@ -39,3 +39,61 @@ The GET request returns the points the receipt was awarded.
 ```
 docker stop <container-id-returned-from-step-2>
 ```
+
+## Sameple request and returns
+Command 1
+```
+jane$ curl http://localhost:8080/receipts/process \
+-X POST \
+-H "Content-Type:application/json" \
+-d '{"retailer":"M&M Corner Market","purchaseDate":"2022-03-20","purchaseTime":"14:33","items":[{"shortDescription":"Gatorade","price":"2.25"},{"shortDescription":"Gatorade","price":"2.25"},{"shortDescription":"Gatorade","price":"2.25"},{"shortDescription":"Gatorade","price":"2.25"}],"total":"9.00"}' \
+```
+Return 1:
+```
+{"id": "5350ed3c-dfbe-4976-b00c-dbe0bb3e9bbd"}
+```
+Output 2
+```
+jane$ curl http://localhost:8080/receipts/5350ed3c-dfbe-4976-b00c-dbe0bb3e9bbd/points
+```
+Output 2
+```
+{"points": 29}
+```
+Command 3
+```
+jane$ curl http://localhost:8080/receipts/all
+```
+Output 3
+```
+[
+    {
+        "total": "9.00",
+        "purchaseDate": "2022-03-20",
+        "retailer": "M&M Corner Market",
+        "purchaseTime": "14:33",
+        "id": "5350ed3c-dfbe-4976-b00c-dbe0bb3e9bbd",
+        "items": [
+            {
+                "price": "2.25",
+                "shortDescription": "Gatorade"
+            },
+            {
+                "price": "2.25",
+                "shortDescription": "Gatorade"
+            },
+            {
+                "price": "2.25",
+                "shortDescription": "Gatorade"
+            },
+            {
+                "price": "2.25",
+                "shortDescription": "Gatorade"
+            }
+        ],
+        "points": 109
+    }
+]
+
+```
+
