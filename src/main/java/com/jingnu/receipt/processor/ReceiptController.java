@@ -34,9 +34,12 @@ public class ReceiptController {
     GetPointsSuccessResponse getPointsSuccessResponse;
     @Autowired
     GetPointsFailureResponse getPointsFailureResponse;
-    private static final Logger logger = LoggerFactory.getLogger(ReceiptService.class);
-    Map<String, Receipt> receiptsReservoir = new HashMap<>();
 
+    // Logger for debug
+    private static final Logger logger = LoggerFactory.getLogger(ReceiptService.class);
+    // key: id, value: receipt
+    Map<String, Receipt> receiptsReservoir = new HashMap<>();
+    // key: id, value: points
     Map<String, Integer> pointsReservoir = new HashMap<>();
 
     @GetMapping(value="/{id}/points")
@@ -89,7 +92,5 @@ public class ReceiptController {
             logger.debug("Request failed with Exception " + generalException.getMessage());
             return ResponseEntity.badRequest().body(submitReceiptFailureResponse);
         }
-
     }
-
 }

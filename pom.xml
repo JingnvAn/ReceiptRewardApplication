@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.jingnu</groupId>
 	<artifactId>receipt.processor</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>receipt.processor</name>
 	<description>Demo project for fetch reward</description>
 	<properties>
