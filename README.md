@@ -47,58 +47,124 @@ The GET request returns the points the receipt was awarded.
 docker stop <container-id-returned-from-step-2>
 ```
 
-## Sameple requests and returns (on Mac)
-Command 1
+## Testing 
+The following commands only works if you've completed the Get started section step 1-3.
+
+Run the following commands in sequence
+
+1. Test POST requests
 ```
 curl http://localhost:8080/receipts/process -X POST -H "Content-Type:application/json" -d '{"retailer":"Target","purchaseDate":"2022-01-01","purchaseTime":"13:01","items":[{"shortDescription":"Mountain Dew 12PK","price":"6.49"},{"shortDescription":"Emils Cheese Pizza","price":"12.25"},{"shortDescription":"Knorr Creamy Chicken","price":"1.26"},{"shortDescription":"Doritos Nacho Cheese","price":"3.35"},{"shortDescription":" Klarbrunn 12-PK 12 FL OZ ","price":"12.00"}],"total":"35.35"}'
 ```
-Output 1:
+Should return an id like `{"id": "0a2b15aa-af50-42cf-be23-6f14eaec0542"}`
+
+2. Test GET requests
 ```
-{"id": "5350ed3c-dfbe-4976-b00c-dbe0bb3e9bbd"}
+curl http://localhost:8080/receipts/0a2b15aa-af50-42cf-be23-6f14eaec0542/points
 ```
-Command 2
+Should return `{"points": 28}`
+
+3. Test award rules are configured correctly
 ```
-jane$ curl http://localhost:8080/receipts/5350ed3c-dfbe-4976-b00c-dbe0bb3e9bbd/points
+curl http://localhost:8080/receipts/process -X POST -H "Content-Type:application/json" -d '{"retailer":"M&M Corner Market","purchaseDate":"2022-03-20","purchaseTime":"14:33","items":[{"shortDescription":"Gatorade","price":"2.25"},{"shortDescription":"Gatorade","price":"2.25"},{"shortDescription":"Gatorade","price":"2.25"},{"shortDescription":"Gatorade","price":"2.25"}],"total":"9.00"}'
 ```
-Output 2
 ```
-{"points": 28}
+curl http://localhost:8080/receipts/all
 ```
-Command 3
+the first cmd returns an id. The second cmd should return an array of two Receipts:
 ```
-jane$ curl http://localhost:8080/receipts/all
-```
-Output 3
-```
-[{
-    "purchaseDate": "2022-01-01",
-    "total": "35.35",
-    "retailer": "Target",
-    "purchaseTime": "13:01",
-    "id": "0c98ef64-ccbf-413f-b02f-67ce46503e9f",
-    "items": [
-        {
-            "price": "6.49",
-            "shortDescription": "Mountain Dew 12PK"
-        },
-        {
-            "price": "12.25",
-            "shortDescription": "Emils Cheese Pizza"
-        },
-        {
-            "price": "1.26",
-            "shortDescription": "Knorr Creamy Chicken"
-        },
-        {
-            "price": "3.35",
-            "shortDescription": "Doritos Nacho Cheese"
-        },
-        {
-            "price": "12.00",
-            "shortDescription": " Klarbrunn 12-PK 12 FL OZ "
-        }
-    ],
-    "points": 28
-}]
+[
+    {
+        "total": "35.35",
+        "purchaseDate": "2022-01-01",
+        "retailer": "Target",
+        "purchaseTime": "13:01",
+        "id": "0a2b15aa-af50-42cf-be23-6f14eaec0542",
+        "items": [
+            {
+                "price": "6.49",
+                "shortDescription": "Mountain Dew 12PK"
+            },
+            {
+                "price": "12.25",
+                "shortDescription": "Emils Cheese Pizza"
+            },
+            {
+                "price": "1.26",
+                "shortDescription": "Knorr Creamy Chicken"
+            },
+            {
+                "price": "3.35",
+                "shortDescription": "Doritos Nacho Cheese"
+            },
+            {
+                "price": "12.00",
+                "shortDescription": " Klarbrunn 12-PK 12 FL OZ "
+            }
+        ],
+        "points": 28
+    },
+    {
+        "total": "9.00",
+        "purchaseDate": "2022-03-20",
+        "retailer": "M&M Corner Market",
+        "purchaseTime": "14:33",
+        "id": "43f85eb1-87b6-46a5-9acc-b84a776bcb58",
+        "items": [
+            {
+                "price": "2.25",
+                "shortDescription": "Gatorade"
+            },
+            {
+                "price": "2.25",
+                "shortDescription": "Gatorade"
+            },
+            {
+                "price": "2.25",
+                "shortDescription": "Gatorade"
+            },
+            {
+                "price": "2.25",
+                "shortDescription": "Gatorade"
+            }
+        ],
+        "points": 109
+    }
+]
 ```
 
+4. Test exceptions are thrown when appropriate
+- This cmd returns `Invalid input provided. Property 'total' is required` because the required property `total` is missing from the receipt
+```
+curl http://localhost:8080/receipts/process -X POST -H "Content-Type:application/json" -d '{"retailer":"M&M Corner Market","purchaseDate":"2022-03-20","purchaseTime":"14:33","items":[{"shortDescription":"Gatorade","price":"2.25"},{"shortDescription":"Gatorade","price":"2.25"},{"shortDescription":"Gatorade","price":"2.25"},{"shortDescription":"Gatorade","price":"2.25"}]}'
+```
+
+- This cmd returns `Invalid input provided. Property 'shortDescription' is required` because the required property `shortDescription` is missing from one of the items
+```
+curl http://localhost:8080/receipts/process -X POST -H "Content-Type:application/json" -d '{"retailer":"M&M Corner Market","purchaseDate":"2022-03-20","purchaseTime":"14:33","items":[{"price":"2.25"},{"shortDescription":"Gatorade","price":"2.25"},{"shortDescription":"Gatorade","price":"2.25"},{"shortDescription":"Gatorade","price":"2.25"}],"total":"9.00"}'
+```
+
+- This cmd returns `Invalid input provided: Unparseable date: "2022/03/20". Property 'purchaseDate' must be of 'yyyy-MM-dd' pattern.`
+```
+curl http://localhost:8080/receipts/process -X POST -H "Content-Type:application/json" -d '{"retailer":"M&M Corner Market","purchaseDate":"2022/03/20","purchaseTime":"14:33","items":[{"shortDescription":"Gatorade","price":"2.25"},{"shortDescription":"Gatorade","price":"2.25"},{"shortDescription":"Gatorade","price":"2.25"},{"shortDescription":"Gatorade","price":"2.25"}],"total":"9.00"}'
+```
+
+- A request with a bad JSON format returns something like `Invalid input provided: 10.a8. Property 'total' must be of '^\d+\.\d{2}$' pattern.`
+```
+ curl http://localhost:8080/receipts/process -X POST -H "Content-Type:application/json" -d '{"retailer":"Target","purchaseDate":"2022-01-01","purchaseTime":"13:01","items":[{"shortDescription":"Mountain Dew 12PK","price":"6.49"},{"shortDescription":"Emils Cheese Pizza","price":"12.25"},{"shortDescription":"Knorr Creamy Chicken","price":"1.26"},{"shortDescription":"Doritos Nacho Cheese","price":"3.35"},{"shortDescription":" Klarbrunn 12-PK 12 FL OZ ","price":"12.00"}],"total":"10.a8"}'
+```
+
+- This cmd returns `Empty 'items' not allowed.`
+```
+curl http://localhost:8080/receipts/process -X POST -H "Content-Type:application/json" -d '{"retailer":"M&M Corner Market","purchaseDate":"2022-03-20","purchaseTime":"14:33","items":[],"total":"9.00"}'
+```
+
+- Run the following cmd twice. The first time it'll return an id, the second time it returns `Request failed idempotency check. Receipt already exist.`
+```
+curl http://localhost:8080/receipts/process -X POST -H "Content-Type:application/json" -d '{"retailer":"Target","purchaseDate":"2022-01-01","purchaseTime":"13:01","items":[{"shortDescription":"Mountain Dew 12PK","price":"6.49"},{"shortDescription":"Emils Cheese Pizza","price":"12.25"},{"shortDescription":"Knorr Creamy Chicken","price":"1.26"},{"shortDescription":"Doritos Nacho Cheese","price":"3.35"},{"shortDescription":" Klarbrunn 12-PK 12 FL OZ ","price":"12.00"}],"total":"10.18"}'
+```
+
+- A wrong id returns `No receipt found for id 0a2b15aa-af50-42cf-be23-6f14eaec0542.`
+```
+curl http://localhost:8080/receipts/0a2b15aa-af50-42cf-be23-6f14eaec0542/points
+```
