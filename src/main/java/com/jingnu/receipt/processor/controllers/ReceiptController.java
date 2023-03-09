@@ -1,6 +1,7 @@
 package com.jingnu.receipt.processor.controllers;
 
 import com.jingnu.receipt.processor.constant.ErrorMessage;
+import com.jingnu.receipt.processor.exception.ReceiptAlreadyExistException;
 import com.jingnu.receipt.processor.exception.ReceiptNotFoundException;
 import com.jingnu.receipt.processor.exception.ValidationException;
 import com.jingnu.receipt.processor.responseModels.*;
@@ -58,7 +59,11 @@ public class ReceiptController {
             }
             getPointsSuccessResponse.setPoints(receipt.getPoints());
         } catch (ReceiptNotFoundException receiptNotFoundException) {
+            logger.debug("Request failed with resourceNotFoundException " + receiptNotFoundException.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(receiptNotFoundException.getMessage() + "\n");
+        } catch (Exception e) {
+            logger.debug("Request failed with unexpected exception " + ErrorMessage.INTERNAL_SERVER_ERROR + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage() + "\n");
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(new JSONObject(getPointsSuccessResponse).toString(4) + "\n");
@@ -85,9 +90,12 @@ public class ReceiptController {
         } catch (ValidationException validationException) {
             logger.debug("Request failed with ValidationException " + validationException.getMessage());
             return ResponseEntity.badRequest().body(validationException.getMessage() + "\n");
+        } catch (ReceiptAlreadyExistException receiptAlreadyExistException) {
+            logger.debug("Request failed with resourceAlreadyExistException " + ErrorMessage.RESOURCE_ALREADY_EXISTS.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorMessage.RESOURCE_ALREADY_EXISTS.getMessage() + "\n");
         } catch (Exception generalException) {
-            logger.debug(ErrorMessage.INTERNAL_SERVER_ERROR + generalException.getMessage());
-            return ResponseEntity.badRequest().body(generalException.getMessage() + "\n");
+            logger.debug("Request failed with unexpected exception " + ErrorMessage.INTERNAL_SERVER_ERROR + generalException.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(generalException.getMessage() + "\n");
         }
     }
 }
