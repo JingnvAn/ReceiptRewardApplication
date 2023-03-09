@@ -9,7 +9,7 @@ public class Receipt {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    @OneToMany(cascade = CascadeType.ALL)
+    @ElementCollection
     private List<Item> items;
     private String retailer;
     private String purchaseDate;
@@ -19,14 +19,6 @@ public class Receipt {
 
     public Receipt() {}
 
-    public Receipt(List<Item> items, String retailer, String purchaseDate, String purchaseTime, String total, Integer points) {
-        this.items = items;
-        this.retailer = retailer;
-        this.purchaseDate = purchaseDate;
-        this.purchaseTime = purchaseTime;
-        this.total = total;
-        this.points = points;
-    }
     public String getId() { return this.id; }
 
     public void setId(String id) { this.id = id; }

@@ -1,5 +1,7 @@
 package com.jingnu.receipt.processor.services;
 
+import com.jingnu.receipt.processor.constant.ErrorMessage;
+import com.jingnu.receipt.processor.exception.ReceiptAlreadyExistException;
 import com.jingnu.receipt.processor.models.Item;
 import com.jingnu.receipt.processor.models.Receipt;
 import com.jingnu.receipt.processor.repositories.ReceiptRepository;
@@ -15,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ReceiptService {
@@ -38,8 +42,17 @@ public class ReceiptService {
     }
 
     @Transactional
-    public Receipt addReceipt(String input) {
+    public Receipt addReceipt(String input) throws ReceiptAlreadyExistException {
         Receipt receipt = createReceiptFromInput(input);
+        // Get all receipts with the same retailer, date, time and total
+        List<Receipt> receiptsStored =  receiptRepository.findByRetailerAndPurchaseDateAndPurchaseTimeAndTotal(receipt.getRetailer(),
+                receipt.getPurchaseDate(), receipt.getPurchaseTime(), receipt.getTotal());
+        // Do idempotency check
+        for (Receipt r : receiptsStored){
+            if(receipt.getItems().containsAll(r.getItems()) && r.getItems().containsAll(receipt.getItems())){
+                throw new ReceiptAlreadyExistException(ErrorMessage.RESOURCE_ALREADY_EXISTS.getMessage());
+            }
+        }
         receipt.setPoints(calculatePoints(receipt));
         return receiptRepository.save(receipt);
     }
