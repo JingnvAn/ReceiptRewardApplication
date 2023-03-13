@@ -1,3 +1,7 @@
+/**
+ * This class encapsulates business logic for processing a receip object
+ * and acts as a mediator between controller and the ReceiptRepositories
+ */
 package com.jingnu.receipt.processor.services;
 
 import com.jingnu.receipt.processor.constant.ErrorMessage;
@@ -17,9 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class ReceiptService {
@@ -29,6 +31,10 @@ public class ReceiptService {
     ItemService itemService;
     private static final Logger logger = LoggerFactory.getLogger(ReceiptService.class);
 
+    /**
+     * Retrieve all receipts stored.
+     * @return A list of all receipts stored
+     */
     public List<Receipt> getAllReceipts() {
         List<Receipt> receipts = new ArrayList<>();
         for (Receipt receipt : receiptRepository.findAll()) {
@@ -37,9 +43,21 @@ public class ReceiptService {
         return receipts;
     }
 
+    /**
+     * Get a receipt by its id.
+     * @param id The id of the receipt to retrieve.
+     * @return The receipt with the specified id, or null if it does not exist.
+     */
     public Receipt getReceiptById(String id) {
         return receiptRepository.findById(id).orElse(null);
     }
+
+    /**
+     * Add a new receipt to the database.
+     * @param input The JSON representation of the receipt to add.
+     * @return The newly created receipt.
+     * @throws ReceiptAlreadyExistException If a receipt with the same retailer, date, time and total already exists.
+     */
 
     @Transactional
     public Receipt addReceipt(String input) throws ReceiptAlreadyExistException {
@@ -57,6 +75,11 @@ public class ReceiptService {
         return receiptRepository.save(receipt);
     }
 
+    /**
+     * Create a new receipt from the JSON input.
+     * @param input The JSON representation of the receipt to create.
+     * @return The newly created receipt.
+     */
     private Receipt createReceiptFromInput(String input) {
         Receipt receipt = new Receipt();
         JSONObject inputJson = new JSONObject(input);
@@ -79,6 +102,11 @@ public class ReceiptService {
         return receipt;
     }
 
+    /**
+     * Calculate points for a given receipt
+     * @param inputReceipt The receipt to be processed for points
+     * @return The points awarded for this receipt
+     */
     private Integer calculatePoints(Receipt inputReceipt) {
         int points = 0;
         //One point for every alphanumeric character in the retailer name.

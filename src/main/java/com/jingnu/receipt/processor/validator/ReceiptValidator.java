@@ -1,3 +1,7 @@
+/**
+ A validator class for validating receipt data. Extends the BaseValidator class.
+ Provides functionality for validating retailer, purchase date, purchase time, items, and total of a receipt.
+ */
 package com.jingnu.receipt.processor.validator;
 
 import com.jingnu.receipt.processor.constant.ErrorMessage;
@@ -31,6 +35,11 @@ public class ReceiptValidator extends BaseValidator{
    private final String DATE_PATTERN = "yyyy-MM-dd";
    private final String TIME_PATTERN = "HH:mm";
 
+   /**
+    Validates the input receipt string using various validations for retailer, purchase date, purchase time, items, and total.
+    @param input The receipt JSON string to validate
+    @throws ValidationException if the input is null, empty, or any required property is missing or invalid
+    */
    public void validateReceipt(String input) throws ValidationException {
       if(input == null || input.isEmpty()){
          throw new ValidationException(ErrorMessage.EMPTY_PAYLOAD.getMessage());
