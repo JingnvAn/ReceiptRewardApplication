@@ -1,3 +1,8 @@
+/**
+ * The ReceiptController class is responsible for handling REST API requests for receipt-related operations.
+ * It exposes several endpoints for retrieving receipts and their points, as well as submitting receipts.
+ * It uses ReceiptService and ReceiptValidator to perform business logic and validation.
+ */
 package com.jingnu.receipt.processor.controllers;
 
 import com.jingnu.receipt.processor.constant.ErrorMessage;
@@ -40,6 +45,10 @@ public class ReceiptController {
     // Logger for debug
     private static final Logger logger = LoggerFactory.getLogger(ReceiptService.class);
 
+    /**
+     * Endpoint for retrieving all receipts in the database.
+     * @return a ResponseEntity containing the list of receipts and an HTTP status code.
+     */
     @GetMapping(value="/all")
     public ResponseEntity<String> getAllReceipts() {
         List<Receipt> receiptList = receiptService.getAllReceipts();
@@ -49,6 +58,12 @@ public class ReceiptController {
         return ResponseEntity.status(HttpStatus.OK).body(resultArray.toString(4) + "\n");
     }
 
+    /**
+     * Endpoint for retrieving the points of a specific receipt given its ID.
+     * @param id the ID of the receipt to retrieve.
+     * @return a ResponseEntity containing the points of the receipt.
+     * @throws ReceiptNotFoundException if the ID provided does not match any receipt in the database.
+     */
     @GetMapping(value="/{id}/points")
     public ResponseEntity<String> getPoints(@PathVariable("id") String id) throws ReceiptNotFoundException {
         try {
@@ -69,6 +84,11 @@ public class ReceiptController {
         return ResponseEntity.status(HttpStatus.OK).body(new JSONObject(getPointsSuccessResponse).toString(4) + "\n");
     }
 
+    /**
+     * Endpoint for creating a receipt
+     * @param requestBody A JSON object representing the receipt.
+     * @return a ResponseEntity containing the id of the receipt.
+     */
     @PostMapping(value="/process", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> submitReceipt(@RequestBody String requestBody) {
         try {

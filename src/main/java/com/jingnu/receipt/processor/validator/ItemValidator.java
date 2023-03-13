@@ -1,3 +1,9 @@
+/**
+ The ItemValidator class is responsible for validating the items in a receipt.
+ It extends the BaseValidator class and provides methods for validating the
+ short description and price of each item in the receipt.
+ */
+
 package com.jingnu.receipt.processor.validator;
 
 import com.jingnu.receipt.processor.constant.ErrorMessage;
@@ -23,6 +29,12 @@ public class ItemValidator extends BaseValidator{
         }
     }
 
+    /**
+     * Validates the items in a receipt.
+     *
+     * @param input a string representation of the receipt items in JSON format.
+     * @throws ValidationException if the input is null or empty, or if the items array is empty.
+     */
     public void validateItems(String input) throws ValidationException {
         if (input == null || input.isEmpty()) {
             throw new ValidationException(ErrorMessage.EMPTY_INPUT_GENERAL.getMessage());
