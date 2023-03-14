@@ -9,6 +9,8 @@ public class Receipt {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+//  JPA auto creates a new table to store the embedded elements
+//  and establishes a relationship between the two tables using foreign keys
     @ElementCollection
     private List<Item> items;
     private String retailer;
